@@ -7,9 +7,10 @@
     tools:context=".MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
         android:id="@+id/map_fragment"
-        android:name="com.example.mapstest.fragment_map"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.example.mapstest.MapFragment"
+        />
 
 </FrameLayout>
