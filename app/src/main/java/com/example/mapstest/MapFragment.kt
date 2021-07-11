@@ -1,17 +1,19 @@
 package com.example.mapstest
 
+import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.example.mapstest.viewModels.MapViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -20,12 +22,11 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import java.io.IOException
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 
-class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var googleMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
@@ -34,6 +35,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
+    private val viewModel: MapViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,6 +66,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(p0: GoogleMap) {
         googleMap = p0
 
@@ -77,7 +80,34 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
 
         googleMap.setOnMapLongClickListener { latLng ->
             onMapLongPressListener(latLng)
+        }
 
+
+        googleMap.setOnMarkerClickListener { clickedMarker ->
+            val markerTitle = EditText(requireContext()).apply {
+                setText(clickedMarker.title)
+
+            }
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("EditMarker")
+                .setView(markerTitle)
+                .setPositiveButton(
+                    "Change title",
+                    DialogInterface.OnClickListener { dialog, which ->
+                        clickedMarker.title = markerTitle.text.toString()
+                    })
+                .setNeutralButton(
+                    "Remove marker",
+                    DialogInterface.OnClickListener { dialog, which ->
+                        clickedMarker.remove()
+                        dialog.cancel()
+                    })
+                .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, id ->
+                    dialog.cancel()
+                })
+                .show()
+
+            true
         }
         setUpMap()
     }
@@ -86,7 +116,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         placeMarkerOnMap(latLng, "new marker")
     }
 
-    override fun onMarkerClick(p0: Marker): Boolean = false
 
     private fun setUpMap() {
         // if the permission is not granted, ask for it
@@ -129,35 +158,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         googleMap.addMarker(markerOption)?.apply {
             setTitle(title)
             isDraggable = true
+
         }
     }
 
-    private fun getAddress(latLng: LatLng): String {
-        val geocoder = Geocoder(requireContext())
-        val addresses: List<Address>?
-        val address: Address?
-        var addressText = ""
-
-        try {
-            addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-
-            if (!addresses.isNullOrEmpty()) {
-                address = addresses[0]
-                for (i in 0 until address.maxAddressLineIndex) {
-                    addressText += if (i == 0) address.getAddressLine(i) else "\n" +
-                            address.getAddressLine(i)
-                }
-            }
-        } catch (e: IOException) {
-            Log.e("MapFragment", e.message.toString())
-            Toast.makeText(
-                requireContext(),
-                "Error: couldn't fetch the address!",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-        Log.i("MapFragment", "address is $addressText")
-
-        return addressText
-    }
 }
