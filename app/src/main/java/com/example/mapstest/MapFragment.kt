@@ -1,49 +1,38 @@
 package com.example.mapstest
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.coroutineScope
-import com.example.mapstest.utils.createIcon
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.collections.MarkerManager
-import com.google.maps.android.ktx.awaitAnimateCamera
-import com.google.maps.android.ktx.awaitMap
-import com.google.maps.android.ktx.model.cameraPosition
-import com.google.maps.android.ktx.utils.collection.addMarker
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import java.io.IOException
 
 
-class MapFragment : Fragment() {
+class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private lateinit var googleMap: GoogleMap
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var lastLocation: Location
 
-    @SuppressLint("MissingPermission")
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                Toast.makeText(requireContext(), "Permission granted!", Toast.LENGTH_SHORT).show()
-                googleMap.apply {
-                    isMyLocationEnabled = true
-                    uiSettings.isMyLocationButtonEnabled = true
-                }
-            } else {
-                Toast.makeText(requireContext(), "Permission denied!", Toast.LENGTH_SHORT).show()
-                //TODO: show sorry dialog
-            }
-
-        }
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+    }
 
 
     override fun onCreateView(
@@ -57,85 +46,118 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.main_map_fragment) as SupportMapFragment
+        // Find the fragment and get notified when the map is ready to be used.
+        val mapFragment = childFragmentManager
+            .findFragmentById(R.id.main_map_fragment) as SupportMapFragment
+        mapFragment.getMapAsync(this)
 
-        lifecycle.coroutineScope.launchWhenCreated {
-            googleMap = mapFragment.awaitMap().apply {
-                isTrafficEnabled = true
-                isBuildingsEnabled = true
+        // initialize fusedLocationClient to track user's current location
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+    }
 
-                uiSettings.apply {
-                    isZoomControlsEnabled = true
-                    setAllGesturesEnabled(true)
-                }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    override fun onMapReady(p0: GoogleMap) {
+        googleMap = p0
+
+        googleMap.apply {
+
+            uiSettings.isZoomControlsEnabled = true
+            setOnMapClickListener {
+                Toast.makeText(requireContext(), "Syndey is clicked", Toast.LENGTH_SHORT).show()
             }
-            when {
-                // 1. Проверяем есть ли уже права
-                ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    Toast.makeText(requireContext(), "We have permission!", Toast.LENGTH_SHORT)
-                        .show()
-                    googleMap.apply {
-                        isMyLocationEnabled = true
-                        uiSettings.isMyLocationButtonEnabled = true
-                    }
-
-                    val fusedLocationProviderClient = LocationServices
-                        .getFusedLocationProviderClient(requireActivity())
-
-                    fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-                        println(it)
-                    }
-                }
-                // 2. Должны показать обоснование необходимости прав
-                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                    // TODO: show rationale dialog
-                }
-                // 3. Запрашиваем права
-                else -> {
-                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                }
-            }
-
-            val target = LatLng(55.751999, 37.617734)
-
-
-
-            val markerManager = MarkerManager(googleMap)
-            val collection = markerManager.newCollection().apply {
-                addMarker {
-                    position(target)
-                    createIcon(
-                        AppCompatResources.getDrawable(
-                            requireContext(),
-                            R.drawable.ic_marker_foreground
-                        )!!
-                    )
-                    title("The Kremlin")
-                }.apply {
-                    tag = "Any data in tag"
-                }
-            }
-
-            collection.setOnMarkerClickListener {
-                Toast.makeText(
-                    requireContext(),
-                    "Marker \"${it.title}\" is  clicked",
-                    Toast.LENGTH_SHORT
-                ).show()
-                true
-            }
-
-            googleMap.awaitAnimateCamera(
-                CameraUpdateFactory.newCameraPosition(
-                    cameraPosition {
-                        target(target)
-                        zoom(15F)
-                    }
-                ))
         }
+
+        googleMap.setOnMapLongClickListener { latLng ->
+            onMapLongPressListener(latLng)
+
+        }
+        setUpMap()
+    }
+
+    private fun onMapLongPressListener(latLng: LatLng) {
+        placeMarkerOnMap(latLng, "new marker")
+    }
+
+    override fun onMarkerClick(p0: Marker): Boolean = false
+
+    private fun setUpMap() {
+        // if the permission is not granted, ask for it
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+            return
+        }
+
+        // isMyLocationEnabled = true enables the my-location layer which draws
+        // a light blue dot on the user’s location. It also adds a button to the map that,
+        // when tapped, centers the map on the user’s location.
+        googleMap.apply {
+            isMyLocationEnabled = true
+        }
+        // fusedLocationClient.getLastLocation() provides the most recent location currently
+        // available.
+        // If you were able to retrieve the the most recent location, then move the
+        // camera to the user’s current location.
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+                lastLocation = it
+                val currentLatLng = LatLng(it.latitude, it.longitude)
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
+            }
+        }
+    }
+
+    private fun placeMarkerOnMap(location: LatLng, title: String) {
+        val markerOption = MarkerOptions().position(location)
+        markerOption.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+        googleMap.addMarker(markerOption)?.apply {
+            setTitle(title)
+            isDraggable = true
+        }
+    }
+
+    private fun getAddress(latLng: LatLng): String {
+        val geocoder = Geocoder(requireContext())
+        val addresses: List<Address>?
+        val address: Address?
+        var addressText = ""
+
+        try {
+            addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+
+            if (!addresses.isNullOrEmpty()) {
+                address = addresses[0]
+                for (i in 0 until address.maxAddressLineIndex) {
+                    addressText += if (i == 0) address.getAddressLine(i) else "\n" +
+                            address.getAddressLine(i)
+                }
+            }
+        } catch (e: IOException) {
+            Log.e("MapFragment", e.message.toString())
+            Toast.makeText(
+                requireContext(),
+                "Error: couldn't fetch the address!",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        Log.i("MapFragment", "address is $addressText")
+
+        return addressText
     }
 }
