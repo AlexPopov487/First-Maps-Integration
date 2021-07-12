@@ -3,6 +3,7 @@ package com.example.mapstest.viewModels
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.example.mapstest.db.MarkerDb
 import com.example.mapstest.db.MarkerEntity
@@ -14,6 +15,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = db.markerDao()
 
     private val _markersList = dao.getAllMarkers()
+
+
 
     val markersList: LiveData<List<MarkerEntity>>
         get() = _markersList

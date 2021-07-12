@@ -20,14 +20,17 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.maps.android.ktx.addMarker
+import com.google.maps.android.collections.MarkerManager
+import com.google.maps.android.ktx.utils.collection.addMarker
 
 
 class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var googleMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
+    private lateinit var collection: MarkerManager.Collection
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -54,17 +57,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         // initialize fusedLocationClient to track user's current location
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
+
         // fetch the markers from db if there are any
         viewModel.markersList.observe(viewLifecycleOwner) { markerList ->
             Log.i("MapFragment", "TESTING: $markerList")
 
-            for (i in markerList) {
-                googleMap.addMarker {
-                    position(LatLng(i.latitude, i.longitude))
-                    title(i.title)
+            collection.clear()
+            for (markerEntity in markerList) {
+                collection.addMarker {
+                    title(markerEntity.title)
+                    position(LatLng(markerEntity.latitude, markerEntity.longitude))
                 }
             }
         }
+
     }
 
 
@@ -80,6 +86,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(p0: GoogleMap) {
         googleMap = p0
 
+        val markerManager = MarkerManager(googleMap)
+        collection = markerManager.newCollection()
+
         googleMap.apply {
             uiSettings.isZoomControlsEnabled = true
         }
@@ -91,7 +100,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             onMapLongPressListener(latLng)
         }
 
-        googleMap.setOnMarkerClickListener { clickedMarker ->
+        collection.setOnMarkerClickListener { clickedMarker ->
             val markerTitle = EditText(requireContext()).apply {
                 setText(clickedMarker.title)
             }
@@ -121,6 +130,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 .show()
             true
         }
+
     }
 
     private fun onMapLongPressListener(latLng: LatLng) {
