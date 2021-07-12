@@ -1,15 +1,14 @@
 package com.example.mapstest
 
 import android.annotation.SuppressLint
-import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -20,10 +19,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.maps.android.ktx.addMarker
 
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -55,6 +53,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         // initialize fusedLocationClient to track user's current location
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        // fetch the markers from db if there are any
+        viewModel.markersList.observe(viewLifecycleOwner) { markerList ->
+            Log.i("MapFragment", "TESTING: $markerList")
+
+            for (i in markerList) {
+                googleMap.addMarker {
+                    position(LatLng(i.latitude, i.longitude))
+                    title(i.title)
+                }
+            }
+        }
     }
 
 
@@ -71,49 +81,51 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         googleMap = p0
 
         googleMap.apply {
-
             uiSettings.isZoomControlsEnabled = true
-            setOnMapClickListener {
-                Toast.makeText(requireContext(), "Syndey is clicked", Toast.LENGTH_SHORT).show()
-            }
         }
+
+        // setup the map at first launch
+        setUpMap()
 
         googleMap.setOnMapLongClickListener { latLng ->
             onMapLongPressListener(latLng)
         }
 
-
         googleMap.setOnMarkerClickListener { clickedMarker ->
             val markerTitle = EditText(requireContext()).apply {
                 setText(clickedMarker.title)
-
             }
+
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("EditMarker")
                 .setView(markerTitle)
                 .setPositiveButton(
-                    "Change title",
-                    DialogInterface.OnClickListener { dialog, which ->
-                        clickedMarker.title = markerTitle.text.toString()
-                    })
-                .setNeutralButton(
-                    "Remove marker",
-                    DialogInterface.OnClickListener { dialog, which ->
-                        clickedMarker.remove()
-                        dialog.cancel()
-                    })
-                .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, id ->
-                    dialog.cancel()
-                })
-                .show()
+                    "Change title"
+                ) { _, _ ->
+                    clickedMarker.title = markerTitle.text.toString()
 
+                    // update marker's title in db
+                    viewModel.updateMarkerTitle(clickedMarker)
+                }
+                .setNeutralButton(
+                    "Remove marker"
+                ) { dialog, _ ->
+                    clickedMarker.isVisible = false
+                    clickedMarker.remove()
+                    viewModel.removeMarker(clickedMarker)
+                    dialog.cancel()
+                }
+                .setNegativeButton("Cancel") { dialog, id ->
+                    dialog.cancel()
+                }
+                .show()
             true
         }
-        setUpMap()
     }
 
     private fun onMapLongPressListener(latLng: LatLng) {
         placeMarkerOnMap(latLng, "new marker")
+        //TODO: show snackbar tap on the marker to change the title
     }
 
 
@@ -130,6 +142,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
                 LOCATION_PERMISSION_REQUEST_CODE
             )
+            // TODO: SHOW SORRY DIALOG
             return
         }
 
@@ -150,16 +163,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12.0f))
             }
         }
+
+
     }
 
     private fun placeMarkerOnMap(location: LatLng, title: String) {
-        val markerOption = MarkerOptions().position(location)
-        markerOption.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
-        googleMap.addMarker(markerOption)?.apply {
-            setTitle(title)
-            isDraggable = true
-
+        viewModel.saveMarker(location.latitude, location.longitude, title)
         }
-    }
 
 }
