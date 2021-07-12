@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="4dp">
+
+    <ImageView
+        android:id="@+id/marker_iV"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:contentDescription="@string/cont_description_map_marker_icon"
+        android:src="@drawable/ic_baseline_map_marker_24"
+        app:layout_constraintBottom_toBottomOf="@id/lng"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/marker_title_Tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/marker_iV"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="New Marker" />
+
+    <TextView
+        android:id="@+id/lat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rV_item_latitude_title_tV"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@id/marker_iV"
+        app:layout_constraintTop_toBottomOf="@id/marker_title_Tv" />
+
+    <TextView
+        android:id="@+id/lng"
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+        android:text="@string/rV_item_longitude_title_tV"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@id/marker_iV"
+        app:layout_constraintTop_toBottomOf="@id/lat" />
+
+    <TextView
+        android:id="@+id/marker_lat_Tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@id/lat"
+        app:layout_constraintTop_toBottomOf="@id/marker_title_Tv"
+        tools:text="3423423434" />
+
+    <TextView
+        android:id="@+id/marker_long_Tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@id/lng"
+        app:layout_constraintTop_toBottomOf="@id/marker_lat_Tv"
+        tools:text="sfsdfd" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

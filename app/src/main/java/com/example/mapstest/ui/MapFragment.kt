@@ -1,4 +1,4 @@
-package com.example.mapstest
+package com.example.mapstest.ui
 
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -12,6 +12,7 @@ import android.widget.EditText
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.mapstest.R
 import com.example.mapstest.viewModels.MapViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -20,7 +21,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.maps.android.collections.MarkerManager
 import com.google.maps.android.ktx.utils.collection.addMarker
