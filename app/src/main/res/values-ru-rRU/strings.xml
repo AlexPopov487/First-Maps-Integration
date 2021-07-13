@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Maps&amp;Markers</string>
+    <string name="drawerMenuItem_all_markers">Все метки</string>
+    <string name="drawerMenuItem_about">О приложении</string>
+    <string name="accessibility_drawer_opened">Меню открыто</string>
+    <string name="accessibility_drawer_closed">Меню закрыто</string>
+    <string name="cont_description_map_marker_icon">Значок метки</string>
+    <string name="menuItem_open_map">Открыть карту</string>
+    <string name="rV_item_latitude_title_tV">Широта:</string>
+    <string name="rV_item_longitude_title_tV">Долгота:</string>
+    <string name="untitled_marker_title">Без имени</string>
+    <string name="make_marker_tapToRename">Нажмите на метку еще раз, чтобы изменить ее имя!</string>
+    <string name="permission_not_granted_cV">Пожалуйста, предоставьте доступ к геоданным и перезапустите приложение</string>
+    <string name="restart_the_app_button">Перезагрузка</string>
+    <string name="rv_emptyState_noMarkers">Нет сохраненных меток!</string>
+    <string name="MapFragment_toolbar_title">Карта</string>
+    <string name="AllMarkersFragment_toolbar_title">Все метки</string>
+    <string name="AboutFragment_toolbar_title">О приложении</string>
+    <string name="about_fragment_text">Небольшое приложение, позволяющее устанавливать свои метки на карте.         При первом запуске приложение автоматически отслеживает местоположение пользователя.         Долгое удержание на полотне карты позволяет создать метку.         Короткое нажатие на существующей метке открывает окно для редактирования, где можно изменить название метки или удалить ее.         При выборе меню Все метки открывается список всех созданных меток.         Клик на метке показывает ее местонахождение на карте.</string>
+    <string name="edit_marker_dialog">Редиктировать</string>
+    <string name="change_title_marker_dialog">Переименовать</string>
+    <string name="remove_marker_dialog">Удалить</string>
+    <string name="cancel_bt_marker_dialog">Отмена</string>
+</resources>

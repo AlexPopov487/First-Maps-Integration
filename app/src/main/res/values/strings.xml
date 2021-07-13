@@ -1,7 +1,6 @@
 <resources>
-    <string name="app_name">Maps Test</string>
+    <string name="app_name">Maps&amp;Markers</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="drawerMenuItem_all_markers">All markers</string>
     <string name="drawerMenuItem_about">About</string>
     <string name="accessibility_drawer_opened">Drawer is opened</string>
@@ -10,15 +9,17 @@
     <string name="menuItem_open_map">Open map</string>
     <string name="rV_item_latitude_title_tV">Latitude:</string>
     <string name="rV_item_longitude_title_tV">Longitude:</string>
-    <string name="about_fragment_text">Небольшое приложение, позволяющее устанавливать свои метки на карте.
-        При первом запуске приложение автоматически отслеживает местоположение пользователя.
-        Долгое удержание на полотне карты позволяет создать метку.
-        Короткое нажатие на существующей метке открывает окно для редактирования, где можно изменить название метки или удалить ее.
-        При выборе меню "Все метки" открывается список всех созданных меток.
-        Клик на метке показывает ее местонахождение на карте.</string>
+    <string name="about_fragment_text">A simple application allowing to set custom markers on the map. On the first launch, the app automatically tracks the user\'s location. Markers are created on long press on the map. A short press on an existing marker prompts a window for editing, with marker renaming and deletion functionality. Selecting the All Markers menu shows a list of all markers created. Click on a marker to see its location on the map.</string>
     <string name="untitled_marker_title">Untitled marker</string>
     <string name="make_marker_tapToRename">Tap on the marker again to change its title!</string>
     <string name="permission_not_granted_cV">Once location permission is granted, please restart the app for it to function properly</string>
     <string name="restart_the_app_button">Restart the app</string>
     <string name="rv_emptyState_noMarkers">No markers yet!</string>
+    <string name="MapFragment_toolbar_title">Map</string>
+    <string name="AllMarkersFragment_toolbar_title">All markers</string>
+    <string name="AboutFragment_toolbar_title">About</string>
+    <string name="edit_marker_dialog">EditMarker</string>
+    <string name="change_title_marker_dialog">Change title</string>
+    <string name="remove_marker_dialog">Remove marker</string>
+    <string name="cancel_bt_marker_dialog">Cancel</string>
 </resources>

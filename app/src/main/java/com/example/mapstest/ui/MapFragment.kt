@@ -51,7 +51,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         savedInstanceState: Bundle?
     ): View {
         binding =  FragmentMapBinding.inflate(inflater, container, false)
-        // Inflate the layout for this fragment
+
         return binding.root
     }
 
@@ -174,25 +174,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("EditMarker")
+            .setTitle(getString(R.string.edit_marker_dialog))
             .setView(markerTitle)
             .setPositiveButton(
-                "Change title"
+                getString(R.string.change_title_marker_dialog)
             ) { _, _ ->
                 clickedMarker.title = markerTitle.text.toString()
 
                 // update marker's title in db
                 viewModel.updateMarkerTitle(clickedMarker)
             }
-            .setNeutralButton(
-                "Remove marker"
+            .setNegativeButton(
+                getString(R.string.remove_marker_dialog)
             ) { dialog, _ ->
                 clickedMarker.isVisible = false
                 clickedMarker.remove()
                 viewModel.removeMarker(clickedMarker)
                 dialog.cancel()
             }
-            .setNegativeButton("Cancel") { dialog, id ->
+            .setNeutralButton(getString(R.string.cancel_bt_marker_dialog)) { dialog, id ->
                 dialog.cancel()
             }
             .show()

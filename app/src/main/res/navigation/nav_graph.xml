@@ -8,26 +8,26 @@
     <fragment
         android:id="@+id/nav_mapFragment"
         android:name="com.example.mapstest.ui.MapFragment"
-        android:label="fragment_map"
-        tools:layout="@layout/fragment_map" >
+        android:label="@string/MapFragment_toolbar_title"
+        tools:layout="@layout/fragment_map">
         <argument
             android:name="lat"
-            app:argType="float"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="float" />
         <argument
             android:name="lng"
-            app:argType="float"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="float" />
         <argument
             android:name="isArgumentPassed"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/nav_allMarkersFragment"
         android:name="com.example.mapstest.ui.AllMarkersFragment"
-        android:label="fragment_all_markers"
-        tools:layout="@layout/fragment_all_markers" >
+        android:label="@string/AllMarkersFragment_toolbar_title"
+        tools:layout="@layout/fragment_all_markers">
         <action
             android:id="@+id/action_nav_allMarkersFragment_to_nav_mapFragment"
             app:destination="@id/nav_mapFragment"
@@ -37,8 +37,8 @@
     <fragment
         android:id="@+id/nav_aboutFragment"
         android:name="com.example.mapstest.ui.AboutFragment"
-        android:label="fragment_about"
-        tools:layout="@layout/fragment_about" >
+        android:label="@string/AboutFragment_toolbar_title"
+        tools:layout="@layout/fragment_about">
         <action
             android:id="@+id/action_nav_aboutFragment_to_nav_mapFragment"
             app:destination="@id/nav_mapFragment"
