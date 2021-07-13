@@ -16,4 +16,9 @@
         Короткое нажатие на существующей метке открывает окно для редактирования, где можно изменить название метки или удалить ее.
         При выборе меню "Все метки" открывается список всех созданных меток.
         Клик на метке показывает ее местонахождение на карте.</string>
+    <string name="untitled_marker_title">Untitled marker</string>
+    <string name="make_marker_tapToRename">Tap on the marker again to change its title!</string>
+    <string name="permission_not_granted_cV">Once location permission is granted, please restart the app for it to function properly</string>
+    <string name="restart_the_app_button">Restart the app</string>
+    <string name="rv_emptyState_noMarkers">No markers yet!</string>
 </resources>

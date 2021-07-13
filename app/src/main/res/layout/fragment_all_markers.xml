@@ -13,4 +13,13 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/marker_list_item" />
 
+    <TextView
+        android:id="@+id/markers_empty_state_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/rv_emptyState_noMarkers"
+        android:textSize="32sp"
+        android:textStyle="bold|italic"
+        android:visibility="gone"/>
 </FrameLayout>

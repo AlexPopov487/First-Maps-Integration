@@ -8,7 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mapstest.databinding.MarkerListItemBinding
 import com.example.mapstest.db.MarkerEntity
 
-class MarkerAdapter : ListAdapter<MarkerEntity, MarkerViewHolder>(MarkerDiffCallback) {
+interface OnClickListener {
+    fun onItemClicked(marker: MarkerEntity)
+}
+
+class MarkerAdapter(private val onClickListener: OnClickListener) :
+    ListAdapter<MarkerEntity, MarkerViewHolder>(MarkerDiffCallback) {
 
     object MarkerDiffCallback : DiffUtil.ItemCallback<MarkerEntity>() {
         override fun areItemsTheSame(oldItem: MarkerEntity, newItem: MarkerEntity): Boolean {
@@ -23,7 +28,7 @@ class MarkerAdapter : ListAdapter<MarkerEntity, MarkerViewHolder>(MarkerDiffCall
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarkerViewHolder {
         val binding = MarkerListItemBinding.inflate(LayoutInflater.from(parent.context),
         parent, false)
-        return MarkerViewHolder(binding)
+        return MarkerViewHolder(binding, onClickListener)
     }
 
     override fun onBindViewHolder(holder: MarkerViewHolder, position: Int) {
@@ -32,14 +37,20 @@ class MarkerAdapter : ListAdapter<MarkerEntity, MarkerViewHolder>(MarkerDiffCall
 
 }
 
-class MarkerViewHolder(private val binding: MarkerListItemBinding) :
+class MarkerViewHolder(
+    private val binding: MarkerListItemBinding,
+    private val onClickListener: OnClickListener
+) :
     RecyclerView.ViewHolder(binding.root) {
-        fun bind(marker: MarkerEntity) {
-            with(binding){
-                markerTitleTv.text = marker.title
-                markerLongTv.text = marker.longitude.toString()
-                markerLatTv.text = marker.latitude.toString()
-            }
-
+    fun bind(marker: MarkerEntity) {
+        with(binding) {
+            markerTitleTv.text = marker.title
+            markerLongTv.text = marker.longitude.toString()
+            markerLatTv.text = marker.latitude.toString()
         }
+
+        binding.root.setOnClickListener {
+            onClickListener.onItemClicked(marker)
+        }
+    }
 }

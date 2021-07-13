@@ -12,7 +12,6 @@ interface MarkerDao {
     @Query("SELECT * FROM MarkerEntity ORDER BY id DESC")
     fun getAllMarkers(): LiveData<List<MarkerEntity>>
 
-
     @Query("SELECT * FROM MarkerEntity WHERE longitude = :lng AND latitude = :lat LIMIT 1 ")
     suspend fun getByLatLng(lng: Double, lat: Double): MarkerEntity
 
